@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESP32-C3 Remote Controller — Quick Start</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #1a1a1a;
+    background: #f5f5f0;
+    padding: 32px 16px;
+  }
+  .page { max-width: 900px; margin: 0 auto; }
+
+  header {
+    background: #1a1a2e;
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+  }
+  header h1 { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
+  header p  { font-size: 14px; opacity: .75; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip {
+    background: rgba(255,255,255,.15);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 12px;
+  }
+
+  h2 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 28px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #e0e0d8;
+  }
+  h3 { font-size: 14px; font-weight: 600; color: #444; margin: 14px 0 6px; }
+
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #e0e0d8;
+    padding: 16px 20px;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; border: 1px solid #e0e0d8; }
+  th { background: #f0f0ea; text-align: right; padding: 8px 14px; font-size: 13px; font-weight: 600; color: #555; border-bottom: 1px solid #e0e0d8; }
+  td { padding: 8px 14px; font-size: 13px; border-bottom: 1px solid #f0f0ea; }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { font-weight: 600; color: #1a5cb0; }
+
+  pre, code {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    direction: ltr;
+    text-align: left;
+  }
+  pre {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 8px 0;
+    line-height: 1.6;
+  }
+  code { background: #eeeef8; border-radius: 4px; padding: 1px 6px; color: #1a5cb0; }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .step-num {
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #1a5cb0;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-body { padding-top: 3px; font-size: 14px; }
+
+  .test-card {
+    background: #fff;
+    border: 1px solid #e0e0d8;
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .test-num { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 4px; }
+  .test-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #1a1a2e; }
+  .test-desc { font-size: 12px; color: #666; line-height: 1.5; }
+  .test-card.highlight { border-color: #1a5cb0; border-width: 2px; }
+  .test-card.highlight .test-title { color: #1a5cb0; }
+
+  .alert {
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin: 8px 0;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .alert-warn { background: #fff8e1; border: 1px solid #ffe082; color: #7a5800; }
+  .alert-ok   { background: #e8f5e9; border: 1px solid #a5d6a7; color: #1b5e20; }
+  .alert-icon { font-size: 16px; flex-shrink: 0; }
+
+  ul { padding-right: 18px; }
+  li { font-size: 14px; margin-bottom: 4px; }
+
+  footer {
+    text-align: center;
+    margin-top: 36px;
+    padding-top: 18px;
+    border-top: 1px solid #e0e0d8;
+    font-size: 12px;
+    color: #999;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+<header>
+  <h1>ESP32-C3 Remote Controller — Quick Start</h1>
+  <p>קיט CS-CTRL · לוח ESP32-C3 עם OLED 0.42" מובנה</p>
+  <div class="chips">
+    <span class="chip">OLED 0.42"</span>
+    <span class="chip">MPU6050</span>
+    <span class="chip">ג'ויסטיק אנלוגי</span>
+    <span class="chip">WS2812B × 4</span>
+    <span class="chip">מנוע רטט</span>
+    <span class="chip">WebDashboard</span>
+    <span class="chip">מד סוללה</span>
+  </div>
+</header>
+
+<!-- 1 LIBRARIES -->
+<h2>1 — התקנת ספריות (Arduino IDE → כלים → נהל ספריות)</h2>
+<div class="grid2">
+  <div>
+    <table>
+      <thead><tr><th>ספרייה</th><th>שימוש</th></tr></thead>
+      <tbody>
+        <tr><td>U8g2</td><td>מסך OLED</td></tr>
+        <tr><td>Adafruit MPU6050</td><td>חיישן תאוצה/ג'יירו</td></tr>
+        <tr><td>Adafruit Unified Sensor</td><td>תלות של MPU6050</td></tr>
+        <tr><td>Adafruit NeoPixel</td><td>לדים WS2812B</td></tr>
+        <tr><td>WebSockets (Markus Sattler)</td><td>Test_07 בלבד</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Board Manager</h3>
+    <ul>
+      <li>כלים → Board Manager</li>
+      <li>חפש: <code>esp32</code></li>
+      <li>מפתח: <code>Espressif Systems</code></li>
+      <li>לאחר ההתקנה בחר:<br><code>ESP32C3 Dev Module</code></li>
+    </ul>
+  </div>
+</div>
+
+<!-- 2 PINS -->
+<h2>2 — מיפוי פינים (לפי סכמה)</h2>
+<table>
+  <thead><tr><th>רכיב</th><th>פונקציה</th><th>GPIO</th><th>הערה</th></tr></thead>
+  <tbody>
+    <tr><td>OLED SDA</td><td>I2C Data</td><td>IO5</td><td>מובנה בלוח, כתובת 0x3C</td></tr>
+    <tr><td>OLED SCL</td><td>I2C Clock</td><td>IO6</td><td>אותו באס עם MPU6050</td></tr>
+    <tr><td>MPU6050</td><td>SDA / SCL</td><td>IO5 / IO6</td><td>כתובת 0x68, AD0→GND</td></tr>
+    <tr><td>ג'ויסטיק VRX</td><td>ציר X</td><td>IO3</td><td>ADC_11db חובה</td></tr>
+    <tr><td>ג'ויסטיק VRY</td><td>ציר Y</td><td>IO4</td><td>ADC_11db חובה</td></tr>
+    <tr><td>ג'ויסטיק SW</td><td>לחיצה (active LOW)</td><td>IO7</td><td>INPUT_PULLUP</td></tr>
+    <tr><td>SW_LEFT</td><td>כפתור שמאל (active LOW)</td><td>IO0</td><td>INPUT_PULLUP</td></tr>
+    <tr><td>SW_RIGHT</td><td>כפתור ימין (active LOW)</td><td>IO9</td><td>INPUT_PULLUP</td></tr>
+    <tr><td>MOTOR</td><td>מנוע רטט (Q1 MOSFET)</td><td>IO10</td><td>HIGH = דולק</td></tr>
+    <tr><td>LEDS</td><td>WS2812B × 4</td><td>IO2</td><td>NeoPixel</td></tr>
+    <tr><td>T-Vbat</td><td>מד מתח סוללה</td><td>IO1</td><td>R12=30kΩ, R13=110kΩ</td></tr>
+  </tbody>
+</table>
+
+<!-- 3 CODE -->
+<h2>3 — נקודות קריטיות בקוד</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>ג'ויסטיק — חובה ADC_11db</h3>
+    <p style="font-size:13px;color:#666;margin-bottom:8px">ברירת מחדל = 0–1.1V. ג'ויסטיק = 0–3.3V:</p>
+    <pre>analogSetPinAttenuation(3, ADC_11db);
+analogSetPinAttenuation(4, ADC_11db);</pre>
+    <p style="font-size:12px;color:#888;margin-top:6px">סף: &lt;500 ו-&gt;3500 (12-bit, מרכז ~2048)</p>
+  </div>
+  <div class="card">
+    <h3>כפתורים — INPUT_PULLUP</h3>
+    <p style="font-size:13px;color:#666;margin-bottom:8px">כל כפתורי הלחיצה active LOW:</p>
+    <pre>pinMode(0,  INPUT_PULLUP); // SW_LEFT
+pinMode(9,  INPUT_PULLUP); // SW_RIGHT
+pinMode(7,  INPUT_PULLUP); // SW_JOY</pre>
+  </div>
+  <div class="card">
+    <h3>מד סוללה — R12/R13</h3>
+    <p style="font-size:13px;color:#666;margin-bottom:8px">מחלק מתח R12=30kΩ, R13=110kΩ:</p>
+    <pre>Vbat = (raw/4095.0) * 3.3
+     * (30.0+110.0) / 110.0;</pre>
+    <p style="font-size:12px;color:#888;margin-top:6px">4.2V מלאה → 3.3V על ADC</p>
+  </div>
+  <div class="card">
+    <h3>MPU6050 — Wire reset</h3>
+    <p style="font-size:13px;color:#666;margin-bottom:8px">כתובת: 0x68 (AD0→GND)</p>
+    <pre>Wire.end();  delay(10);
+Wire.begin(5, 6);   // SDA, SCL
+Wire.setClock(400000);</pre>
+  </div>
+</div>
+
+<!-- 4 TESTS -->
+<h2>4 — סדר בדיקת התרגילים</h2>
+<div class="grid4">
+  <div class="test-card">
+    <div class="test-num">Test 00</div>
+    <div class="test-title">I2C Scanner</div>
+    <div class="test-desc">סורק I2C ומציג על OLED. מצפה: 0x3C + 0x68</div>
+  </div>
+  <div class="test-card">
+    <div class="test-num">Test 01</div>
+    <div class="test-title">OLED</div>
+    <div class="test-desc">מונה מתחלף — בודק תצוגה ו-I2C</div>
+  </div>
+  <div class="test-card">
+    <div class="test-num">Test 02</div>
+    <div class="test-title">Button Counter</div>
+    <div class="test-desc">SW_LEFT (IO0) · SW_RIGHT (IO9)</div>
+  </div>
+  <div class="test-card">
+    <div class="test-num">Test 03</div>
+    <div class="test-title">Joystick</div>
+    <div class="test-desc">VRX/VRY על OLED, כיוונים X/Y</div>
+  </div>
+  <div class="test-card">
+    <div class="test-num">Test 04</div>
+    <div class="test-title">Vibration Motor</div>
+    <div class="test-desc">מנוע IO10 — פולס בתנועת ג'ויסטיק</div>
+  </div>
+  <div class="test-card">
+    <div class="test-num">Test 05</div>
+    <div class="test-title">WS2812 LEDs</div>
+    <div class="test-desc">4 × RGB על IO2 — צבע לפי כיוון</div>
+  </div>
+  <div class="test-card">
+    <div class="test-num">Test 06</div>
+    <div class="test-title">MPU6050</div>
+    <div class="test-desc">הטיה + ג'יירו — לדים לפי ציר</div>
+  </div>
+  <div class="test-card highlight">
+    <div class="test-num">Test 07</div>
+    <div class="test-title">WebDashboard</div>
+    <div class="test-desc">AP WiFi + WebSocket + דשבורד HTML</div>
+  </div>
+</div>
+
+<!-- 5 WEBDASHBOARD -->
+<h2>5 — Test_07 WebDashboard — הפעלה</h2>
+<div class="card">
+  <div class="step">
+    <span class="step-num">1</span>
+    <div class="step-body"><strong>העלה קבצי דף:</strong> כלים → ESP32 Sketch Data Upload (מעלה את תיקיית <code>data/</code>)</div>
+  </div>
+  <div class="step">
+    <span class="step-num">2</span>
+    <div class="step-body"><strong>העלה קוד:</strong> Ctrl+U כרגיל</div>
+  </div>
+  <div class="step">
+    <span class="step-num">3</span>
+    <div class="step-body"><strong>חבר WiFi:</strong> <code>ESP32_Console_V2</code> · סיסמה: <code>87654321</code></div>
+  </div>
+  <div class="step">
+    <span class="step-num">4</span>
+    <div class="step-body"><strong>פתח דפדפן:</strong> <code>http://192.168.4.1</code></div>
+  </div>
+</div>
+
+<!-- 6 TROUBLESHOOTING -->
+<h2>6 — פתרון בעיות נפוצות</h2>
+<div class="alert alert-warn">
+  <span class="alert-icon">&#9888;</span>
+  <div><strong>MPU6050 לא נמצא</strong> — הרץ Test_00_I2C_Scanner. אם מצא רק 0x3C: בדוק חיווט, ודא AD0→GND, הרץ שוב.</div>
+</div>
+<div class="alert alert-warn">
+  <span class="alert-icon">&#9888;</span>
+  <div><strong>ג'ויסטיק לא מגיב / ערכים קטנים</strong> — ודא שהוספת <code>analogSetPinAttenuation(..., ADC_11db)</code>. בלי זה הטווח מוגבל ל-0–1.1V.</div>
+</div>
+<div class="alert alert-warn">
+  <span class="alert-icon">&#9888;</span>
+  <div><strong>Serial Monitor לא עובד</strong> — ESP32-C3 לעיתים צריך לחיצה על BOOT בזמן חיבור. לחלופין — כל המידע מוצג על ה-OLED.</div>
+</div>
+<div class="alert alert-warn">
+  <span class="alert-icon">&#9888;</span>
+  <div><strong>מסך OLED קפוא</strong> — ה-OLED לא מוחק את עצמו אם I2C נתקע. ודא שהתוכן משתנה בזמן אמת; נתק חשמל בין בדיקות.</div>
+</div>
+<div class="alert alert-ok">
+  <span class="alert-icon">&#10003;</span>
+  <div><strong>תרגיל עבר?</strong> עבור לתרגיל הבא. כשכולם עוברים — פתח את <code>ESP32C3_Remote_Controller/ESP32C3_Remote_Controller.ino</code> (הפרויקט המאוחד).</div>
+</div>
+
+<footer>
+  ESP32-C3 Remote Controller Kit · CS-CTRL
+</footer>
+
+</div>
+</body>
+</html>
