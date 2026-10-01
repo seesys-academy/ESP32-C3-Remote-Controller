@@ -1,4 +1,4 @@
-# ESP32-C3 Remote Controller — Quick Start
+# ESP32-C3 Remote Controller
 
 פרויקט שלט מבוסס ESP32-C3 (לוח CS-CTRL עם מסך OLED 0.42" מובנה) עם:
 מסך OLED 0.42", MPU6050 (ג'יירו/אקסלרומטר), ג'ויסטיק אנלוגי, מנוע רטט,
