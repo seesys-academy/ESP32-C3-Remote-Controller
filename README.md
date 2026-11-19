@@ -3,7 +3,7 @@
 פרויקט שלט מבוסס ESP32-C3 (לוח CS-CTRL עם מסך OLED 0.42" מובנה) עם:
 מסך OLED 0.42", MPU6050 (ג'יירו/אקסלרומטר), ג'ויסטיק אנלוגי, מנוע רטט,
 4 לדים RGB (WS2812B), שני כפתורים (SW_LEFT / SW_RIGHT), ומד מתח סוללה.
-מדריך לשימוש בשלט - https://drive.google.com/file/d/1K-qxsGXYQnhCpWZN0pUnz1uCOn9sRk9a/view
+מדריך להרכבה ושימוש בשלט - https://drive.google.com/file/d/1K-qxsGXYQnhCpWZN0pUnz1uCOn9sRk9a/view
 ---
 
 ## 1 — התקנת ספריות (Arduino IDE → כלים → נהל ספריות)
